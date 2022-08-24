@@ -32,10 +32,17 @@ function navSubmitClick(evt) {
 	putStoriesOnPage();
 	$submitForm.show();
 }
-
 $navSubmit.on("click", navSubmitClick);
-/** When a user first logins in, update the navbar to reflect that. */
 
+/* Show only favorite stories on click */
+function navFavoritesClick(evt) {
+	console.debug("navSubmitClick", evt);
+	hidePageComponents();
+	putFavoriteStoriesOnPage();
+}
+$navFavorites.on("click", navFavoritesClick);
+
+/** When a user first logins in, update the navbar to reflect that. */
 function updateNavOnLogin() {
 	console.debug("updateNavOnLogin");
 	$(".main-nav-links").show();

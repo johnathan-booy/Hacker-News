@@ -64,6 +64,12 @@ class StoryList {
 		return new StoryList(stories);
 	}
 
+	getStoryfromId(storyId) {
+		for (let story of this.stories) {
+			if (story.storyId === storyId) return story;
+		}
+	}
+
 	/** Adds story data to API, makes a Story instance, adds it to story list.
 	 * - user - the current instance of User who will post the story
 	 * - obj of {title, author, url}
@@ -202,14 +208,23 @@ class User {
 			method: "POST",
 			params: { token: this.loginToken },
 		});
+
+		if (response.statusText === "OK")
+			this.favorites.push(storyList.getStoryfromId(storyId));
 	}
 
 	async deleteFavorite(storyId) {
-		console.debug("addFavorite");
+		console.debug("deleteFavorite");
 		const response = await axios({
 			url: `${BASE_URL}/users/${this.username}/favorites/${storyId}`,
 			method: "DELETE",
 			params: { token: this.loginToken },
 		});
+
+		if (response.statusText === "OK") {
+			for (let i = 0; i < this.favorites.length; i++) {
+				if (this.favorites[i].storyId === storyId) this.favorites.splice(i, 1);
+			}
+		}
 	}
 }

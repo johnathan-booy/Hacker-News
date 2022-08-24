@@ -80,6 +80,22 @@ function putStoriesOnPage() {
 	$allStoriesList.show();
 }
 
+function putFavoriteStoriesOnPage() {
+	console.debug("putFavoriteStoriesOnPage");
+
+	$allStoriesList.empty();
+
+	// loop through all of our stories and generate HTML for them
+	for (let story of currentUser.favorites) {
+		const $story = generateStoryMarkup(story);
+		$allStoriesList.append($story);
+	}
+
+	if (currentUser instanceof User) showAllStoryFavoriteIcons();
+
+	$allStoriesList.show();
+}
+
 async function createNewStory(evt) {
 	evt.preventDefault();
 	console.debug("createNewStory");
