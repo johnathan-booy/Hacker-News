@@ -194,4 +194,22 @@ class User {
 			return null;
 		}
 	}
+
+	async addFavorite(storyId) {
+		console.debug("addFavorite");
+		const response = await axios({
+			url: `${BASE_URL}/users/${this.username}/favorites/${storyId}`,
+			method: "POST",
+			params: { token: this.loginToken },
+		});
+	}
+
+	async deleteFavorite(storyId) {
+		console.debug("addFavorite");
+		const response = await axios({
+			url: `${BASE_URL}/users/${this.username}/favorites/${storyId}`,
+			method: "DELETE",
+			params: { token: this.loginToken },
+		});
+	}
 }
