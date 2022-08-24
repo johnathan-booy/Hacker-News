@@ -24,7 +24,7 @@ function replaceFavoriteIcon($span, isFavorite) {
 		: $icon.removeClass("far").addClass("fas");
 }
 
-function updateStoriesOnLogin() {
+function showAllStoryFavoriteIcons() {
 	$(".story-favorite").show();
 }
 
@@ -76,7 +76,7 @@ function putStoriesOnPage() {
 		const $story = generateStoryMarkup(story);
 		$allStoriesList.append($story);
 	}
-
+	if (currentUser instanceof User) showAllStoryFavoriteIcons();
 	$allStoriesList.show();
 }
 
@@ -92,6 +92,11 @@ async function createNewStory(evt) {
 		title,
 		url,
 	});
+
+	$("#submit-author").val("");
+	$("#submit-title").val("");
+	$("#submit-url").val("");
+	$submitForm.hide();
 
 	storyList.stories.unshift(newStory);
 	putStoriesOnPage();
