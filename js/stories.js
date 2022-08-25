@@ -3,46 +3,12 @@
 // This is the global list of the stories, an instance of StoryList
 let storyList;
 
-function checkFavoriteStatus(storyId) {
-	if (currentUser instanceof User) {
-		let isFavorite = false;
-		for (let favorite of currentUser.favorites) {
-			if (favorite.storyId === storyId) {
-				isFavorite = true;
-				break;
-			}
-		}
-		return isFavorite;
-	}
-	return false;
-}
-
-function replaceFavoriteIcon($span, isFavorite) {
-	const $icon = $span.children("i");
-	isFavorite
-		? $icon.removeClass("fas").addClass("far")
-		: $icon.removeClass("far").addClass("fas");
-}
-
-function showFavoriteIcons() {
-	$(".story-favorite").show();
-}
-
-/** Get and show stories when site first loads. */
-
 async function getAndShowStoriesOnStart() {
 	storyList = await StoryList.getStories();
 	$storiesLoadingMsg.remove();
 
 	putStoriesOnPage();
 }
-
-/**
- * A render method to render HTML for an individual Story instance
- * - story: an instance of Story
- *
- * Returns the markup for the story.
- */
 
 function generateStoryMarkup(story) {
 	// console.debug("generateStoryMarkup", story);
@@ -64,32 +30,29 @@ function generateStoryMarkup(story) {
     `);
 }
 
-/** Gets list of stories from server, generates their HTML, and puts on page. */
-
 function putStoriesOnPage() {
 	console.debug("putStoriesOnPage");
 
 	$allStoriesList.empty();
 
-	// loop through all of our stories and generate HTML for them
 	for (let story of storyList.stories) {
 		const $story = generateStoryMarkup(story);
 		$allStoriesList.append($story);
 	}
-	if (currentUser instanceof User) showFavoriteIcons();
+	hideOrShowFavoriteIcons();
 	$allStoriesList.show();
 }
 
 function putMoreStoriesOnPage(newStoryIdx) {
 	console.debug("putMoreStoriesOnPage");
 
-	// loop through all of our stories and generate HTML for them
-
-	for (let i = newStoryIdx; i < storyList.stories.length; i++) {
-		const $story = generateStoryMarkup(storyList.stories[i]);
-		$allStoriesList.append($story);
-	}
-	if (currentUser instanceof User) showFavoriteIcons();
+	storyList.stories.forEach((story, index) => {
+		if (index >= newStoryIdx) {
+			const $story = generateStoryMarkup(story);
+			$allStoriesList.append($story);
+		}
+	});
+	hideOrShowFavoriteIcons();
 }
 
 function putFavoriteStoriesOnPage() {
@@ -97,12 +60,12 @@ function putFavoriteStoriesOnPage() {
 
 	$allStoriesList.empty();
 
-	if (currentUser.favorites.length > 0) {
+	if (currentUser.favorites.length) {
 		for (let story of currentUser.favorites) {
 			const $story = generateStoryMarkup(story);
 			$allStoriesList.append($story);
 		}
-		showFavoriteIcons();
+		hideOrShowFavoriteIcons();
 	} else {
 		$("<h5>No favorites added!</h5>").appendTo($allStoriesList);
 	}
@@ -115,12 +78,12 @@ function putMyStoriesOnPage() {
 
 	$allStoriesList.empty();
 
-	if (currentUser.favorites.length > 0) {
+	if (currentUser.favorites.length) {
 		for (let story of currentUser.ownStories) {
 			const $story = generateStoryMarkup(story);
 			$allStoriesList.append($story);
 		}
-		showFavoriteIcons();
+		hideOrShowFavoriteIcons();
 	} else {
 		$("<h5>No stories added by user yet!</h5>").appendTo($allStoriesList);
 	}
@@ -128,25 +91,12 @@ function putMyStoriesOnPage() {
 	$allStoriesList.show();
 }
 
-function clearSubmitForm() {
-	$("#submit-author").val("");
-	$("#submit-title").val("");
-	$("#submit-url").val("");
-	$submitForm.hide();
-}
-
 async function createNewStory(evt) {
-	evt.preventDefault();
 	console.debug("createNewStory");
 
-	const author = $("#submit-author").val();
-	const title = $("#submit-title").val();
-	const url = $("#submit-url").val();
-	const newStory = await StoryList.addStory(currentUser, {
-		author,
-		title,
-		url,
-	});
+	evt.preventDefault();
+
+	const newStory = await StoryList.addStory(currentUser, getSubmitFormData());
 
 	currentUser.ownStories.unshift(newStory);
 	storyList.stories.unshift(newStory);
@@ -155,6 +105,20 @@ async function createNewStory(evt) {
 	clearSubmitForm();
 }
 $submitForm.on("submit", createNewStory);
+
+function clearSubmitForm() {
+	$("#submit-author").val("");
+	$("#submit-title").val("");
+	$("#submit-url").val("");
+	$submitForm.hide();
+}
+
+function getSubmitFormData() {
+	const author = $("#submit-author").val();
+	const title = $("#submit-title").val();
+	const url = $("#submit-url").val();
+	return { author, title, url };
+}
 
 async function toggleFavoriteStory(evt) {
 	console.debug("toggleFavoriteStory");
@@ -173,6 +137,35 @@ async function toggleFavoriteStory(evt) {
 }
 $allStoriesList.on("click", ".story-favorite", toggleFavoriteStory);
 
+function checkFavoriteStatus(storyId) {
+	if (currentUser instanceof User) {
+		let isFavorite = false;
+		for (let favorite of currentUser.favorites) {
+			if (favorite.storyId === storyId) {
+				isFavorite = true;
+				break;
+			}
+		}
+		return isFavorite;
+	}
+	return false;
+}
+
+function replaceFavoriteIcon($span, isFavorite) {
+	const $icon = $span.children("i");
+	isFavorite
+		? $icon.removeClass("fas").addClass("far")
+		: $icon.removeClass("far").addClass("fas");
+}
+
+function hideOrShowFavoriteIcons() {
+	if (currentUser instanceof User) {
+		$(".story-favorite").show();
+	} else {
+		$(".story-favorite").hide();
+	}
+}
+
 function createDeleteButtons() {
 	const $allLis = $allStoriesList.children("li");
 	for (let li of $allLis) {
@@ -180,19 +173,17 @@ function createDeleteButtons() {
 		const $span = $("<span>").addClass("story-delete");
 		const $icon = $("<i>").addClass("fas fa-trash-alt");
 
-		$span.on("click", deleteButtonClick);
-
 		$icon.appendTo($span);
 		$span.prependTo($li);
 	}
 }
-
 async function deleteButtonClick(evt) {
 	const storyId = $(this).parent().attr("id");
 	await storyList.deleteStory(storyId);
 	removeStoryFromFavorites(storyId);
 	removeStoryFromOwnStories(storyId);
 }
+$allStoriesList.on("click", ".story-delete", deleteButtonClick);
 
 function removeStoryFromFavorites(storyId) {
 	currentUser.favorites = currentUser.favorites.filter((story) => {
