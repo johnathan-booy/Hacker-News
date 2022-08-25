@@ -57,11 +57,8 @@ class StoryList {
 	async getMoreStories() {
 		console.debug("getMoreStories");
 		const response = await axios({
-			url: `${BASE_URL}/stories`,
+			url: `${BASE_URL}/stories?skip=${this.stories.length}`,
 			method: "GET",
-			data: {
-				skip: this.stories.length,
-			},
 		});
 		const newStories = response.data.stories.map((story) => new Story(story));
 		this.stories = this.stories.concat(newStories);
