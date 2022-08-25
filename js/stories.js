@@ -80,6 +80,18 @@ function putStoriesOnPage() {
 	$allStoriesList.show();
 }
 
+function putMoreStoriesOnPage(newStoryIdx) {
+	console.debug("putMoreStoriesOnPage");
+
+	// loop through all of our stories and generate HTML for them
+
+	for (let i = newStoryIdx; i < storyList.stories.length; i++) {
+		const $story = generateStoryMarkup(storyList.stories[i]);
+		$allStoriesList.append($story);
+	}
+	if (currentUser instanceof User) showFavoriteIcons();
+}
+
 function putFavoriteStoriesOnPage() {
 	console.debug("putFavoriteStoriesOnPage");
 
@@ -193,3 +205,13 @@ function removeStoryFromOwnStories(storyId) {
 		return story.storyId !== storyId;
 	});
 }
+
+$(window).scroll(async function () {
+	// Scrolled to the bottom?
+	if ($(document).height() - $(this).height() - $(this).scrollTop() < 1) {
+		console.debug("Scrolled to the bottom");
+		const newStoryIdx = storyList.stories.length;
+		await storyList.getMoreStories();
+		putMoreStoriesOnPage(newStoryIdx);
+	}
+});
