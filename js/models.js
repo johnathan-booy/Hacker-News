@@ -5,12 +5,10 @@ const BASE_URL = "https://hack-or-snooze-v3.herokuapp.com";
 /******************************************************************************
  * Story: a single story in the system
  */
-
 class Story {
 	/** Make instance of Story from data object about story:
 	 *   - {title, author, url, username, storyId, createdAt}
 	 */
-
 	constructor({ storyId, title, author, url, username, createdAt }) {
 		this.storyId = storyId;
 		this.title = title;
@@ -21,7 +19,6 @@ class Story {
 	}
 
 	/** Parses hostname out of URL and returns it. */
-
 	getHostName() {
 		const domain = new URL(this.url);
 		return domain.hostname;
@@ -31,7 +28,6 @@ class Story {
 /******************************************************************************
  * List of Story instances: used by UI to show story lists in DOM.
  */
-
 class StoryList {
 	constructor(stories) {
 		this.stories = stories;
@@ -44,7 +40,6 @@ class StoryList {
 	 *  - makes a single StoryList instance out of that
 	 *  - returns the StoryList instance.
 	 */
-
 	static async getStories() {
 		// query the /stories endpoint (no auth required)
 		const response = await axios({
@@ -72,6 +67,25 @@ class StoryList {
 		this.stories = this.stories.concat(newStories);
 	}
 
+	/** Adds story data to API, makes a Story instance, adds it to story list.
+	 * - user - the current instance of User who will post the story
+	 * - obj of {title, author, url}
+	 *
+	 * Returns the new Story instance
+	 */
+	static async addStory(user, newStory) {
+		const response = await axios({
+			method: "post",
+			url: `${BASE_URL}/stories`,
+			data: {
+				token: user.loginToken,
+				story: newStory,
+			},
+		});
+
+		return new Story(response.data.story);
+	}
+
 	async deleteStory(storyId) {
 		const response = await axios({
 			url: `${BASE_URL}/stories/${storyId}`,
@@ -91,37 +105,16 @@ class StoryList {
 			if (story.storyId === storyId) return story;
 		}
 	}
-
-	/** Adds story data to API, makes a Story instance, adds it to story list.
-	 * - user - the current instance of User who will post the story
-	 * - obj of {title, author, url}
-	 *
-	 * Returns the new Story instance
-	 */
-	static async addStory(user, newStory) {
-		const response = await axios({
-			method: "post",
-			url: `${BASE_URL}/stories`,
-			data: {
-				token: user.loginToken,
-				story: newStory,
-			},
-		});
-
-		return new Story(response.data.story);
-	}
 }
 
 /******************************************************************************
  * User: a user in the system (only used to represent the current user)
  */
-
 class User {
 	/** Make user instance from obj of user data and a token:
 	 *   - {username, name, createdAt, favorites[], ownStories[]}
 	 *   - token
 	 */
-
 	constructor(
 		{ username, name, createdAt, favorites = [], ownStories = [] },
 		token
@@ -241,9 +234,9 @@ class User {
 		});
 
 		if (response.statusText === "OK") {
-			for (let i = 0; i < this.favorites.length; i++) {
-				if (this.favorites[i].storyId === storyId) this.favorites.splice(i, 1);
-			}
+			this.favorites = this.favorites.filter((story) => {
+				return story.storyId !== storyId;
+			});
 		}
 	}
 }
