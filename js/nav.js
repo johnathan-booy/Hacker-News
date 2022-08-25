@@ -42,6 +42,15 @@ function navFavoritesClick(evt) {
 }
 $navFavorites.on("click", navFavoritesClick);
 
+/* Show only users own stories on click */
+function navMyStoriesClick(evt) {
+	console.debug("navSubmitClick", evt);
+	hidePageComponents();
+	putMyStoriesOnPage();
+	createDeleteButtons();
+}
+$navMyStories.on("click", navMyStoriesClick);
+
 /** When a user first logins in, update the navbar to reflect that. */
 function updateNavOnLogin() {
 	console.debug("updateNavOnLogin");

@@ -37,6 +37,11 @@
 	display: block;
 }
 
-.story-favorite {
+.story-favorite,
+.story-delete {
 	cursor: pointer;
+}
+
+.story-delete:hover {
+	color: red;
 }

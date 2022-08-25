@@ -64,6 +64,20 @@ class StoryList {
 		return new StoryList(stories);
 	}
 
+	async deleteStory(storyId) {
+		const response = await axios({
+			url: `${BASE_URL}/stories/${storyId}`,
+			method: "DELETE",
+			data: { token: currentUser.loginToken },
+		});
+
+		$(`#${storyId}`).remove();
+
+		this.stories = this.stories.filter((story) => {
+			return story.storyId !== storyId;
+		});
+	}
+
 	getStoryfromId(storyId) {
 		for (let story of this.stories) {
 			if (story.storyId === storyId) return story;
@@ -122,7 +136,6 @@ class User {
 	 * - password: a new password
 	 * - name: the user's full name
 	 */
-
 	static async signup(username, password, name) {
 		const response = await axios({
 			url: `${BASE_URL}/signup`,
@@ -149,7 +162,6 @@ class User {
    * - username: an existing user's username
    * - password: an existing user's password
    */
-
 	static async login(username, password) {
 		const response = await axios({
 			url: `${BASE_URL}/login`,
@@ -174,7 +186,6 @@ class User {
 	/** When we already have credentials (token & username) for a user,
 	 *   we can log them in automatically. This function does that.
 	 */
-
 	static async loginViaStoredCredentials(token, username) {
 		try {
 			const response = await axios({

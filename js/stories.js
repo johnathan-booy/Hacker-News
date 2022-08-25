@@ -24,7 +24,7 @@ function replaceFavoriteIcon($span, isFavorite) {
 		: $icon.removeClass("far").addClass("fas");
 }
 
-function showAllStoryFavoriteIcons() {
+function showFavoriteIcons() {
 	$(".story-favorite").show();
 }
 
@@ -76,7 +76,7 @@ function putStoriesOnPage() {
 		const $story = generateStoryMarkup(story);
 		$allStoriesList.append($story);
 	}
-	if (currentUser instanceof User) showAllStoryFavoriteIcons();
+	if (currentUser instanceof User) showFavoriteIcons();
 	$allStoriesList.show();
 }
 
@@ -85,15 +85,38 @@ function putFavoriteStoriesOnPage() {
 
 	$allStoriesList.empty();
 
-	// loop through all of our stories and generate HTML for them
+	// loop through all the users favorite stories and generate HTML for them
 	for (let story of currentUser.favorites) {
 		const $story = generateStoryMarkup(story);
 		$allStoriesList.append($story);
 	}
 
-	if (currentUser instanceof User) showAllStoryFavoriteIcons();
+	showFavoriteIcons();
 
 	$allStoriesList.show();
+}
+
+function putMyStoriesOnPage() {
+	console.debug("putMyStoriesOnPage");
+
+	$allStoriesList.empty();
+
+	// loop through all of our stories and generate HTML for them
+	for (let story of currentUser.ownStories) {
+		const $story = generateStoryMarkup(story);
+		$allStoriesList.append($story);
+	}
+
+	showFavoriteIcons();
+
+	$allStoriesList.show();
+}
+
+function clearSubmitForm() {
+	$("#submit-author").val("");
+	$("#submit-title").val("");
+	$("#submit-url").val("");
+	$submitForm.hide();
 }
 
 async function createNewStory(evt) {
@@ -109,15 +132,12 @@ async function createNewStory(evt) {
 		url,
 	});
 
-	$("#submit-author").val("");
-	$("#submit-title").val("");
-	$("#submit-url").val("");
-	$submitForm.hide();
-
+	currentUser.ownStories.unshift(newStory);
 	storyList.stories.unshift(newStory);
-	putStoriesOnPage();
-}
 
+	putStoriesOnPage();
+	clearSubmitForm();
+}
 $submitForm.on("submit", createNewStory);
 
 async function toggleFavoriteStory(evt) {
@@ -132,6 +152,40 @@ async function toggleFavoriteStory(evt) {
 	} else {
 		currentUser.addFavorite(storyId);
 	}
+
 	replaceFavoriteIcon($span, isFavorite);
 }
 $allStoriesList.on("click", ".story-favorite", toggleFavoriteStory);
+
+function createDeleteButtons() {
+	const $allLis = $allStoriesList.children("li");
+	for (let li of $allLis) {
+		const $li = $(li);
+		const $span = $("<span>").addClass("story-delete");
+		const $icon = $("<i>").addClass("fas fa-trash-alt");
+
+		$span.on("click", deleteButtonClick);
+
+		$icon.appendTo($span);
+		$span.prependTo($li);
+	}
+}
+
+async function deleteButtonClick(evt) {
+	const storyId = $(this).parent().attr("id");
+	await storyList.deleteStory(storyId);
+	removeStoryFromFavorites(storyId);
+	removeStoryFromOwnStories(storyId);
+}
+
+function removeStoryFromFavorites(storyId) {
+	currentUser.favorites = currentUser.favorites.filter((story) => {
+		return story.storyId !== storyId;
+	});
+}
+
+function removeStoryFromOwnStories(storyId) {
+	currentUser.ownStories = currentUser.ownStories.filter((story) => {
+		return story.storyId !== storyId;
+	});
+}
