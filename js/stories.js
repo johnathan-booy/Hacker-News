@@ -78,7 +78,7 @@ function putMyStoriesOnPage() {
 
 	$allStoriesList.empty();
 
-	if (currentUser.favorites.length) {
+	if (currentUser.ownStories.length) {
 		for (let story of currentUser.ownStories) {
 			const $story = generateStoryMarkup(story);
 			$allStoriesList.append($story);
