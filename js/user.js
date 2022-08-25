@@ -60,7 +60,6 @@ function logout(evt) {
 	localStorage.clear();
 	location.reload();
 }
-
 $navLogOut.on("click", logout);
 
 /******************************************************************************
@@ -109,4 +108,32 @@ function updateUIOnUserLogin() {
 	$allStoriesList.show();
 
 	updateNavOnLogin();
+}
+
+function populateUserProfile() {
+	const { name, username, createdAt } = currentUser;
+	const accountDate = createdAt.slice(0, 10);
+
+	$("#profile-username").text(username);
+	$("#profile-name").text(name);
+	$("#profile-account-date").text(accountDate);
+}
+
+async function updateFormSubmit(evt) {
+	evt.preventDefault();
+	await currentUser.updateProfile(getUpdateFormData());
+	clearUpdateForm();
+	populateUserProfile();
+}
+$updateForm.on("submit", updateFormSubmit);
+
+function clearUpdateForm() {
+	$("#update-name").val("");
+	$("#update-password").val("");
+}
+
+function getUpdateFormData() {
+	const name = $("#update-name").val();
+	const password = $("#update-password").val();
+	return { name, password };
 }

@@ -9,28 +9,37 @@ const $allStoriesList = $("#all-stories-list");
 
 const $loginForm = $("#login-form");
 const $signupForm = $("#signup-form");
+const $updateForm = $("#update-form");
 const $submitForm = $("#submit-form");
 
-const $navLogin = $("#nav-login");
+const $userProfile = $("#user-profile");
+
 const $navUserProfile = $("#nav-user-profile");
+const $navLogin = $("#nav-login");
 const $navLogOut = $("#nav-logout");
+
+const $navUser = $("#nav-user");
 const $navSubmit = $("#nav-submit");
 const $navFavorites = $("#nav-favorites");
 const $navMyStories = $("#nav-my-stories");
-const $navUser = $("#nav-user");
 
 /** To make it easier for individual components to show just themselves, this
  * is a useful function that hides pretty much everything on the page. After
  * calling this, individual components can re-show just what they want.
  */
-
 function hidePageComponents() {
-	const components = [$allStoriesList, $loginForm, $signupForm, $submitForm];
+	const components = [
+		$allStoriesList,
+		$loginForm,
+		$signupForm,
+		$submitForm,
+		$userProfile,
+		$updateForm,
+	];
 	components.forEach((c) => c.hide());
 }
 
 /** Overall function to kick off the app. */
-
 async function start() {
 	console.debug("start");
 
@@ -43,7 +52,6 @@ async function start() {
 }
 
 // Once the DOM is entirely loaded, begin the app
-
 console.warn(
 	"HEY STUDENT: This program sends many debug messages to" +
 		" the console. If you don't see the message 'start' below this, you're not" +

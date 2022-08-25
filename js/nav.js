@@ -21,6 +21,16 @@ function navLoginClick(evt) {
 }
 $navLogin.on("click", navLoginClick);
 
+/** Show update on click on user profile */
+function navUserProfileClick(evt) {
+	console.debug("navUserProfileClick", evt);
+	hidePageComponents();
+	populateUserProfile();
+	$userProfile.show();
+	$updateForm.show();
+}
+$navUserProfile.on("click", navUserProfileClick);
+
 /* Show new story submit form on click on submit */
 function navSubmitClick(evt) {
 	console.debug("navSubmitClick", evt);

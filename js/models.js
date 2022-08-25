@@ -210,6 +210,49 @@ class User {
 		}
 	}
 
+	async updateName(name) {
+		console.debug("updateName");
+		const response = await axios({
+			url: `${BASE_URL}/users/${this.username}`,
+			method: "PATCH",
+			data: { token: this.loginToken, user: { name } },
+		});
+		if (response.statusText === "OK") this.name = name;
+		return response.statusText;
+	}
+
+	async updatePassword(password) {
+		console.debug("updatePassword");
+		const response = await axios({
+			url: `${BASE_URL}/users/${this.username}`,
+			method: "PATCH",
+			data: { token: this.loginToken, user: { password } },
+		});
+		return response.statusText;
+	}
+
+	async updateProfile({ name, password }) {
+		let nameStatus;
+		let passwordStatus;
+
+		if (name.length) {
+			nameStatus = await this.updateName(name);
+		}
+		if (password.length) {
+			passwordStatus = await this.updatePassword(password);
+		}
+
+		if (nameStatus === "OK" && passwordStatus === "OK") {
+			alert("Name and Password Changed!");
+		} else if (nameStatus === "OK") {
+			alert("Name Changed!");
+		} else if (passwordStatus === "OK") {
+			alert("Password Changed!");
+		} else {
+			alert("Failed to Update Profile!");
+		}
+	}
+
 	async addFavorite(storyId) {
 		console.debug("addFavorite");
 		const response = await axios({

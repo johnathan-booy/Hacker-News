@@ -80,7 +80,14 @@
 
   </section>
 
-
+  <section id="user-profile" class="user-profile-container container hidden">
+    <h4>User Profile Info</h4>
+    <div>
+      <div class="profile-info">Name: <span id="profile-name"></span></div>
+      <div class="profile-info">Username: <span id="profile-username"></span></div>
+      <div class="profile-info">Account Created: <span id="profile-account-date"></span></div>
+    </div>
+  </section>
 
   <!-- Login and signup forms -->
   <section class="account-forms-container container">
@@ -117,7 +124,23 @@
       </div>
       <button type="submit">create account</button>
     </form>
+
+    <!-- Update form -->
+    <form action="#" id="update-form" class="account-form hidden" method="post">
+      <h4>Update Your Profile</h4>
+      <div class="login-input">
+        <label for="update-name">name</label>
+        <input id="update-name">
+      </div>
+      <div class="login-input">
+        <label for="update-password">password</label>
+        <input id="update-password" type="password">
+      </div>
+      <button type="submit">Update</button>
+    </form>
   </section>
+
+
 
   <!-- Library JS & our JS -->
   <script src="https://unpkg.com/jquery"></script>
