@@ -85,13 +85,15 @@ function putFavoriteStoriesOnPage() {
 
 	$allStoriesList.empty();
 
-	// loop through all the users favorite stories and generate HTML for them
-	for (let story of currentUser.favorites) {
-		const $story = generateStoryMarkup(story);
-		$allStoriesList.append($story);
+	if (currentUser.favorites.length > 0) {
+		for (let story of currentUser.favorites) {
+			const $story = generateStoryMarkup(story);
+			$allStoriesList.append($story);
+		}
+		showFavoriteIcons();
+	} else {
+		$("<h5>No favorites added!</h5>").appendTo($allStoriesList);
 	}
-
-	showFavoriteIcons();
 
 	$allStoriesList.show();
 }
@@ -101,13 +103,15 @@ function putMyStoriesOnPage() {
 
 	$allStoriesList.empty();
 
-	// loop through all of our stories and generate HTML for them
-	for (let story of currentUser.ownStories) {
-		const $story = generateStoryMarkup(story);
-		$allStoriesList.append($story);
+	if (currentUser.favorites.length > 0) {
+		for (let story of currentUser.ownStories) {
+			const $story = generateStoryMarkup(story);
+			$allStoriesList.append($story);
+		}
+		showFavoriteIcons();
+	} else {
+		$("<h5>No stories added by user yet!</h5>").appendTo($allStoriesList);
 	}
-
-	showFavoriteIcons();
 
 	$allStoriesList.show();
 }
